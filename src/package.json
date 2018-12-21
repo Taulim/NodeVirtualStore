@@ -9,6 +9,9 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "gulp": "^4.0.0"
+    "coffeescript": "^2.3.2",
+    "gulp": "^4.0.0",
+    "gulp-sass": "^4.0.2",
+    "gulp-util": "^3.0.8"
   }
 }
