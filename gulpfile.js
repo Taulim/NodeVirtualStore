@@ -10,6 +10,8 @@ var htmlclean  = require('gulp-htmlclean');
 var deporder   = require('gulp-deporder');
 var stripdebug = require('gulp-strip-debug');
 var del        = require('del');
+var connect    = require('gulp-connect');
+var watch      = require('gulp-watch');
 
 gulp.task('clean:dist', function(pFnDone) {
 	del(['dist/**', '!dist', '!dist/.gitkeep']);
@@ -117,11 +119,20 @@ gulp.task('watch', function(pFnDone) {
 	gulp.watch('app/js/**/*.js', gulp.series('js'));
 	gulp.watch(['app/lib/**/*', '!app/lib/.gitkeep'], gulp.series('lib'));
 	gulp.watch(['app/**/*.+(html|htm)', '!app/lib'], gulp.series('html'));
-	// pFnDone();
+	watch('dist/**/*', { ignoreInitial: false }).pipe(connect.reload());
+	pFnDone();
+});
+
+gulp.task('connect', function(pFnDone) {
+	connect.server({
+		root: 'dist/',
+		livereload: true
+	});
+	pFnDone();
 });
 
 gulp.task('build', gulp.series('clean:dist', gulp.parallel('image', gulp.series('sass','css'), gulp.series('coffee', 'js'), 'lib', 'html')));
 
-gulp.task('dev', gulp.series('build', 'watch'));
+gulp.task('dev', gulp.parallel(gulp.series('build', 'watch'), 'connect'));
 
 gulp.task('default', gulp.series('build'));
