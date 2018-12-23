@@ -16,7 +16,32 @@ gulp.task('clean:dist', function(pFnDone) {
 	pFnDone();
 });
 
-gulp.task('image', function(pFnDone) {
+gulp.task('clean:css', function(pFnDone) {
+	del(['dist/css/**']);
+	pFnDone();
+});
+
+gulp.task('clean:image', function(pFnDone) {
+	del(['dist/img/**']);
+	pFnDone();
+});
+
+gulp.task('clean:js', function(pFnDone) {
+	del(['dist/js/**']);
+	pFnDone();
+});
+
+gulp.task('clean:lib', function(pFnDone) {
+	del(['dist/lib/**']);
+	pFnDone();
+});
+
+gulp.task('clean:html', function(pFnDone) {
+	del(['dist/**/*.+(html|htm)', '!dist/lib', '!dist/lib/**/*.+(html|htm)']);
+	pFnDone();
+});
+
+gulp.task('image', gulp.series('clean:image', function imageBuild(pFnDone) {
 	!(gulp.src('app/img/**/*.+(png|jpg|jpeg|gif|svg)')
 		.pipe(imagemin({
 			optimizationLeve : 5,
@@ -25,7 +50,7 @@ gulp.task('image', function(pFnDone) {
 		.pipe(gulp.dest('dist/img'))
 	);
 	pFnDone();
-});
+}));
 
 gulp.task('sass', function(pFnDone) {
 	!(gulp.src('app/scss/**/*.scss')
@@ -36,7 +61,7 @@ gulp.task('sass', function(pFnDone) {
 	pFnDone();
 });
 
-gulp.task('css', function(pFnDone) {
+gulp.task('css', gulp.series('clean:css', function cssBuild(pFnDone) {
 	!(gulp.src('app/css/**/*.css')
 		.pipe(concat('styles.css'))
 		.pipe(gulp.dest('dist/css'))
@@ -45,7 +70,7 @@ gulp.task('css', function(pFnDone) {
 		.pipe(gulp.dest('dist/css'))
 	);
 	pFnDone();
-});
+}));
 
 gulp.task('coffee', function(pFnDone) {
 	!(gulp.src('app/coffee/**/*.coffee')
@@ -56,7 +81,7 @@ gulp.task('coffee', function(pFnDone) {
 	pFnDone();
 });
 
-gulp.task('js', function(pFnDone) {
+gulp.task('js', gulp.series('clean:js', function jsBuild(pFnDone) {
 	!(gulp.src('app/js/*.js')
 		.pipe(deporder()) // Ensure dependency order
 		.pipe(concat('scripts.js'))
@@ -67,22 +92,22 @@ gulp.task('js', function(pFnDone) {
 		.pipe(gulp.dest('dist/js'))
 	);
 	pFnDone();
-});
+}));
 
-gulp.task('lib', function(pFnDone) {
+gulp.task('lib', gulp.series('clean:lib', function libBuild(pFnDone) {
 	!(gulp.src(['app/lib/**/*', '!app/lib/.gitkeep'])
 		.pipe(gulp.dest('dist/lib'))
 	);
 	pFnDone();
-});
+}));
 
-gulp.task('html', function(pFnDone) {
+gulp.task('html', gulp.series('clean:html', function htmlBuild(pFnDone) {
 	!(gulp.src(['app/**/*.+(html|htm)', '!app/lib/**'])
 		// .pipe(htmlclean()) // Clean HTML (comments, unnecessary whitespaces / attributes, etc.)
 		.pipe(gulp.dest('dist'))
 	);
 	pFnDone();
-});
+}));
 
 gulp.task('watch', function(pFnDone) {
 	gulp.watch('app/img/**/*.+(png|jpg|jpeg|gif|svg)', gulp.series('image'))
