@@ -24,7 +24,7 @@
     "gulp-sass": "^4.0.2",
     "gulp-strip-debug": "^3.0.0",
     "gulp-uglify": "^3.0.1",
-    "gulp-useref": "^3.1.6",
     "gulp-util": "^3.0.8"
-  }
+  },
+  "optionalDependencies": {}
 }
